@@ -76,8 +76,9 @@ try {
 Write-Host ""
 Write-Host "=== Setup Complete ===" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "You can now launch VRNotify from the Start Menu." -ForegroundColor White
+Write-Host "VRNotify is ready to use!" -ForegroundColor White
 Write-Host ""
-Write-Host "NOTE: VRNotify must be launched via the Start Menu shortcut" -ForegroundColor Yellow
-Write-Host "      (not by double-clicking the .exe directly)" -ForegroundColor Yellow
-Write-Host "      to enable Windows notification access." -ForegroundColor Yellow
+Write-Host "Start Menu -> VRNotify to launch." -ForegroundColor Green
+Write-Host ""
+Write-Host "NOTE: Always launch from the Start Menu." -ForegroundColor Yellow
+Write-Host "      Double-clicking the .exe directly will NOT work." -ForegroundColor Yellow

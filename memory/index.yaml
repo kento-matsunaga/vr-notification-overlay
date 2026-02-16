@@ -8,6 +8,7 @@ project:
   current_phase: pre-mvp  # pre-mvp | mvp-phase1 | mvp-phase2 | mvp-phase3
   created_at: "2026-02-16"
   last_updated: "2026-02-17"
+  architecture_pivot: "2026-02-17: Discord Bot/Slack → Windows通知リスナー方式に変更"
 
 # 完了したマイルストーン
 completed_milestones:
@@ -46,24 +47,33 @@ next_milestones:
     description: "OVRSharp + SkiaSharpでハードコード通知カードをSteamVRオーバーレイとしてVR内に表示。HMD追従、テキスト描画、PNG経由テクスチャロードで動作確認済み。"
 
   - id: M006
-    name: "Discord Bot プロトタイプ"
+    name: "Windows通知リスナー プロトタイプ"
     status: pending
-    description: "Discord.Netでメッセージ受信→コンソール表示を確認"
+    description: |
+      UserNotificationListenerで全アプリの通知をキャプチャしコンソール表示。
+      Sparse MSIX Package作成、通知アクセス許可、アプリ名・タイトル・本文取得。
+      [旧M006 Discord Bot + 旧M007 Slack Socket Modeを統合・方式変更]
 
   - id: M007
-    name: "Slack Socket Mode プロトタイプ"
-    status: pending
-    description: "Slack Socket Modeでメッセージ受信を確認"
-
-  - id: M008
     name: "統合プロトタイプ"
     status: pending
-    description: "Discord/Slackメッセージ→VRオーバーレイ表示の統合動作確認"
+    description: |
+      Windows通知キャプチャ → Channel<NotificationCard> → VRオーバーレイ表示の一気通貫。
+      BackgroundService構成、MediatRパイプライン、DisplaySlotManager。
+
+  - id: M008
+    name: "アプリ選択フィルタ・設定永続化"
+    status: pending
+    description: |
+      アプリ一覧の自動検出、表示対象アプリの選択UI、
+      FilterChain実装、JsonSettingsRepository、設定の永続化。
 
   - id: M009
     name: "MVP実装"
     status: pending
-    description: "フィルタリング、DND、履歴、設定UI等の完全なMVP実装"
+    description: |
+      DND、通知履歴(SQLite)、表示スロット管理(プリエンプション)、
+      デスクトップUI(トレイ常駐、設定画面)、テスト拡充。
 
 # 未解決の課題・検討事項
 open_questions:
@@ -74,13 +84,23 @@ open_questions:
 
   - id: Q002
     question: "Steam販売時のDiscord Privileged Intent申請"
-    status: deferred
-    note: "100サーバー超になった時点で対応"
+    status: resolved
+    note: "Windows通知リスナー方式に変更のため不要"
 
   - id: Q003
     question: "通知履歴にメッセージ本文をどこまで保存するか"
+    status: resolved
+    note: "Windows通知の内容をそのまま表示するため、外部APIポリシーとの整合性問題なし"
+
+  - id: Q004
+    question: "Sparse MSIX Packageの署名方法（開発時は自己署名、配布時は？）"
     status: open
-    note: "プライバシーとSlack APIポリシーとの整合性要確認"
+    note: "M006実装時に調査・決定"
+
+  - id: Q005
+    question: "Win32アプリ（非MSIX）のAppInfo取得失敗時のフォールバック"
+    status: open
+    note: "DisplayNameでフォールバック、try-catchで保護"
 
 # セッション一覧
 sessions:
@@ -96,3 +116,6 @@ sessions:
   - file: "sessions/2026-02-16_m005-overlay-prototype.yaml"
     date: "2026-02-16"
     summary: "M005完了。OpenVRオーバーレイプロトタイプ実装、SteamVR上で動作確認"
+  - file: "sessions/2026-02-17_architecture-pivot.yaml"
+    date: "2026-02-17"
+    summary: "アーキテクチャピボット。Discord Bot/Slack → Windows通知リスナー方式に変更。マイルストーン再策定。"

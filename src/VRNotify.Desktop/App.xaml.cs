@@ -7,7 +7,6 @@ using Serilog;
 using VRNotify.Desktop.ViewModels;
 using VRNotify.Desktop.Views;
 using VRNotify.Domain.Configuration;
-using VRNotify.Domain.NotificationProcessing;
 using VRNotify.Host.DependencyInjection;
 using WpfApplication = System.Windows.Application;
 
@@ -34,17 +33,20 @@ public partial class App : WpfApplication
 
         Log.Information("VRNotify starting up");
 
-        // Check Package Identity
+        // Check Package Identity (required for Windows notification listener)
         if (!HasPackageIdentity())
         {
+            Log.Error("Package Identity not detected. Notification listener will not work.");
             MessageBox.Show(
-                "VRNotify requires Package Identity to capture Windows notifications.\n\n" +
-                "Please install VRNotify using the installer, or register the Sparse MSIX package manually.",
-                "VRNotify - Package Identity Required",
+                "VRNotify を正しく動作させるには、スタートメニューから起動してください。\n\n" +
+                "exe ファイルを直接ダブルクリックすると、Windows 通知の取得に必要な\n" +
+                "権限が付与されません。\n\n" +
+                "【対処方法】\n" +
+                "スタートメニュー → VRNotify をクリックして起動",
+                "VRNotify - 起動方法エラー",
                 MessageBoxButton.OK,
-                MessageBoxImage.Error);
-            Log.Error("Package Identity not found, exiting");
-            Shutdown(1);
+                MessageBoxImage.Warning);
+            Shutdown();
             return;
         }
 
