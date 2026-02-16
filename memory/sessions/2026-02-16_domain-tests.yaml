@@ -1,0 +1,34 @@
+session:
+  date: "2026-02-16"
+  title: "ドメイン層ユニットテスト作成"
+  duration_estimate: "30min"
+
+objectives:
+  - "ドメイン層の主要エンティティ・値オブジェクトのユニットテスト作成"
+
+completed:
+  - task: "ドメインテスト10ファイル・83テスト作成"
+    details: |
+      テストファイル一覧:
+        1. NotificationCardTests.cs (12 tests) - 状態遷移、AppendToBody、コンストラクタ、ドメインイベント
+        2. MessageContentTests.cs (7 tests) - TruncatedText境界値、record等値性
+        3. FilterRuleTests.cs (3 tests) - コンストラクタ、record等値性、Parametersの型
+        4. NotificationSourceTests.cs (8 tests) - 接続状態遷移、Enable/Disable、名前更新
+        5. ReconnectPolicyTests.cs (5 tests) - Defaultプロパティ値、カスタム値
+        6. ProfileTests.cs (16 tests) - フィルタルール管理、ソース有効化、DnD設定
+        7. UserSettingsTests.cs (15 tests) - プロファイル管理、デフォルト削除禁止、切替
+        8. DisplayConfigTests.cs (9 tests) - デフォルト値、優先度別表示時間
+        9. DndSettingsTests.cs (2 tests) - デフォルトモード
+        10. DisplaySlotTests.cs (7 tests) - Assign/Release、IsOccupied
+
+      結果: 全83テストPASS、0 failures
+
+milestone_progress:
+  - id: M004.5
+    name: "ドメイン層テストカバレッジ"
+    status: completed
+    summary: "83テスト作成・全PASS。主要ドメインオブジェクトの振る舞いを検証。"
+
+next_steps:
+  - "Windows環境セットアップ（Phase B）"
+  - "OpenVRプロトタイプ実装（Phase C / M005）"

@@ -33,6 +33,12 @@ completed_milestones:
 
 # 次のマイルストーン（未着手）
 next_milestones:
+  - id: M004.5
+    name: "ドメイン層テストカバレッジ"
+    status: completed
+    completed_at: "2026-02-16"
+    description: "83テスト作成・全PASS。NotificationCard/UserSettings/Profile等の主要ドメインオブジェクト検証。"
+
   - id: M005
     name: "OpenVRオーバーレイ プロトタイプ"
     status: pending
@@ -83,3 +89,6 @@ sessions:
   - file: "sessions/2026-02-16_architecture-design.yaml"
     date: "2026-02-16"
     summary: "M004完了。アーキテクチャ設計、.slnスキャフォールド、全ドメイン/Application/Infrastructure/Overlay/Host層の実装"
+  - file: "sessions/2026-02-16_domain-tests.yaml"
+    date: "2026-02-16"
+    summary: "ドメイン層ユニットテスト83件作成・全PASS"
