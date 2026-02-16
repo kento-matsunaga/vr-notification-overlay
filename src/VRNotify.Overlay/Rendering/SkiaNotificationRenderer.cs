@@ -15,6 +15,7 @@ public sealed class SkiaNotificationRenderer : IOverlayRenderer
     private static readonly SKColor BackgroundColor = new(0x1a, 0x1a, 0x2e, 0xCC);
     private static readonly SKColor DiscordColor = new(0x58, 0x65, 0xF2);
     private static readonly SKColor SlackColor = new(0x61, 0x1F, 0x69);
+    private static readonly SKColor WindowsNotificationColor = new(0x00, 0x78, 0xD4);
     private static readonly SKColor SenderTextColor = SKColors.White;
     private static readonly SKColor BodyTextColor = new(0xCC, 0xCC, 0xCC);
     private static readonly SKColor HighPriorityColor = new(0xFF, 0x44, 0x44);
@@ -55,6 +56,7 @@ public sealed class SkiaNotificationRenderer : IOverlayRenderer
         {
             SourceType.Discord => DiscordColor,
             SourceType.Slack => SlackColor,
+            SourceType.WindowsNotification => WindowsNotificationColor,
             _ => DiscordColor
         };
 

@@ -7,8 +7,13 @@ public sealed record GetSettingsQuery : IRequest<UserSettings>;
 
 public sealed class GetSettingsQueryHandler : IRequestHandler<GetSettingsQuery, UserSettings>
 {
-    public Task<UserSettings> Handle(GetSettingsQuery request, CancellationToken cancellationToken)
+    private readonly ISettingsRepository _repository;
+
+    public GetSettingsQueryHandler(ISettingsRepository repository)
     {
-        throw new NotImplementedException();
+        _repository = repository;
     }
+
+    public Task<UserSettings> Handle(GetSettingsQuery request, CancellationToken cancellationToken)
+        => _repository.LoadAsync(cancellationToken);
 }

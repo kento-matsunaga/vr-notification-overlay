@@ -1,91 +1,101 @@
 # VR通知オーバーレイシステム - 決定事項
+# 更新: 2026-02-17 Windows通知リスナー方式 + Booth MVP
 
-## プロジェクト名（仮）: VRNotify
+## プロジェクト名: VRNotify
+
+## アーキテクチャピボット決定
+
+| 項目 | 旧方式 | 新方式（確定） | 理由 |
+|------|--------|--------------|------|
+| 通知ソース | Discord.Net + Slack Socket Mode | Windows UserNotificationListener | あらゆるアプリ対応、ユーザー設定不要 |
+| 認証 | OAuth2 + Bot Token | Package Identity (Sparse MSIX) | トークン管理不要、セットアップ簡略化 |
+| 優先度判定 | DM/メンション/キーワード | 全て Low (Booth MVP) | Windows通知に優先度情報なし |
+| フィルタ | チャンネル/サーバー/キーワード/送信者 | アプリ名のみ (Booth MVP) | Windows通知で利用可能な情報に限定 |
 
 ## 技術スタック
 
 | 項目 | 決定 | 備考 |
 |------|------|------|
-| 言語 | C# / .NET 8 | |
+| 言語 | C# / .NET 8 | self-contained, win-x64 |
 | VRオーバーレイ | OVRSharp (OpenVR) | |
-| Discord連携 | OAuth2 + Bot混合方式 | 認証はOAuth2で簡単に、メッセージ取得はBot (Gateway) で |
-| Slack連携 | Socket Mode (WebSocket) | 公開サーバー不要 |
-| テクスチャ描画 | SkiaSharp | クロスプラットフォーム・高品質フォント |
-| デスクトップUI | WPF | Windows専用で問題なし |
-| 設定永続化 | JSON (設定) + SQLite (通知履歴) | |
-| トークン保護 | Windows DPAPI | |
+| 通知キャプチャ | Windows UserNotificationListener | Package Identity 必須 |
+| テクスチャ描画 | SkiaSharp | |
+| デスクトップUI | WPF + CommunityToolkit.Mvvm | |
+| システムトレイ | Hardcodet.NotifyIcon.Wpf | |
+| 設定永続化 | JSON (`%APPDATA%/VRNotify/settings.json`) | アトミック書き込み (.tmp → rename) |
+| 通知履歴 | SQLite (`%APPDATA%/VRNotify/history.db`) | 自動マイグレーション |
+| ログ | Serilog (File sink) | `%APPDATA%/VRNotify/logs/` |
+| DI/ホスティング | Microsoft.Extensions.Hosting | 3 HostedServices |
+| インストーラー | NSIS | 証明書 + MSIX 自動登録 |
+| パッケージID | Sparse MSIX | AppxManifest.xml + 自己署名証明書 |
 
-## MVP スコープ（標準MVP）
+## Booth MVP スコープ
 
-### 含む
-- Discord 通知（DM、メンション、チャンネル選択）
-- Slack 通知（Socket Mode）
-- HMD追従表示（上部/下部/手首を設定で切替可能）
-- 通知フィルタリング（チャンネル、サーバー、キーワード、送信者）
-- Do Not Disturb モード
-- 通知履歴
-- 通知音（SteamVR Audio）
-- デスクトップ設定UI (WPF)
-- SteamVR自動起動/終了連動
+### 含む（実装済み）
+- Windows通知キャプチャ → VRオーバーレイ表示
+- アプリフィルタ（アプリ名で許可/除外）
+- DND モード（Off / SuppressAll / HighPriorityOnly）
+- 表示設定（位置、表示秒数、不透明度、スケール）
+- 通知履歴（SQLite、7日間/1000件）
+- WPF設定ウィンドウ（5タブ）
+- システムトレイ常駐
+- NSISインストーラー + ポータブルZIP版
 
 ### 含まない（将来実装）
-- VR内からの返信機能
-- コントローラー振動フィードバック
-- 配信モード（プライバシーモード）
-- スケジュールDND
-- VRChatワールド移動検知
-- Chatwork等のプラグイン拡張
-- プロファイル切替
-- 自動アップデート
+- 通知音 (SteamVR Audio) → Phase 2
+- 複数プロファイル切替 → Phase 2
+- 配信/プライバシーモード → Phase 2
+- Discord/Slack Bot 直接連携 → Phase 3
+- DPAPI トークン暗号化 → Phase 3
+- プラグインシステム → Phase 3
+- 自動アップデート → Phase 3
+- VR内返信・コントローラー振動 → Phase 3
 
 ## UX 決定事項
 
 | 項目 | 決定 | 備考 |
 |------|------|------|
-| 通知表示位置 | 全方式実装、設定で切替可能 | デフォルトはテスト後に決定 |
-| 返信機能 | MVPに含めない | 将来の拡張ポイントのみ設計 |
-| 通知音 | MVPに含む（音のみ、振動なし） | SteamVRオーディオ経由 |
-| 初期セットアップ | デスクトップで完結 | VR内では基本設定のみ変更可能 |
+| 通知ソース | Windows通知リスナー | ユーザーはトークン設定不要 |
+| 初期セットアップ | インストーラーで完結 | 証明書+MSIX登録を自動化 |
+| 設定変更 | デスクトップ設定ウィンドウ | VR内設定は将来対応 |
+| 表示位置 | HMD追従（上部） | 設定で変更可能 |
+| 通知音 | Booth MVPに含まない | Phase 2 |
+| アプリ終了 | トレイメニュー→Exit | ウィンドウ閉じはHideのみ |
 
 ## ビジネス決定事項
 
 | 項目 | 決定 | 備考 |
 |------|------|------|
-| 配布形態 | 将来的にSteam販売 | 初期はテスト配布 |
-| Discord権限 | Privileged Intent使用 | Steam販売時は100サーバー未満制限に注意。Bot認証申請が必要になる可能性 |
-| ライセンス | 未定 | Steam販売前提なのでプロプライエタリ |
+| 配布形態 | Booth先行（投げ銭型）→ Steam後続 | |
+| ライセンス | MIT License | |
+| インストーラー方式 | NSIS (.exe) | OpenVR Advanced Settings 参考 |
+| 対応OS | Windows 10 (Build 19041) / Windows 11 | |
+| VR要件 | SteamVR 対応ヘッドセット | Quest 2/3/Pro, Index, VIVE 等 |
+| ランタイム同梱 | .NET 8 self-contained | ユーザーのインストール不要 |
 
-## Discord Bot 権限スコープ設計
+## 技術的決定事項
 
-### OAuth2 スコープ
-- `identify` - ユーザー情報取得
-- `guilds` - サーバー一覧取得
-- `bot` - Bot機能
+| 決定 | 選択 | 根拠 |
+|------|------|------|
+| プロセスモデル | シングルプロセス | IPC不要で簡潔 |
+| 非同期キュー | System.Threading.Channels | 高性能、バックプレッシャー対応 |
+| 設定形式 | JSON | 人間が読める、マイグレーション容易 |
+| 履歴ストレージ | SQLite | 構造化クエリ、外部サーバー不要 |
+| オーバーレイレンダリング | SkiaSharp → OpenVR SetOverlayTexture | 高品質テキスト描画 |
+| WPF MVVM | CommunityToolkit.Mvvm | Source generators、最小ボイラープレート |
+| ログ | Serilog | 構造化ログ、ファイルローテーション |
+| Entity再構築 | Internal reconstitution ctor + InternalsVisibleTo | ドメインの不変条件を維持しつつDBから復元 |
+| DTO分離 | SettingsDtos.cs | JSONスキーマとドメインモデルを疎結合 |
 
-### Bot Permissions
-- `Read Messages/View Channels` - チャンネルメッセージ読み取り
-- `Read Message History` - メッセージ履歴
+## パフォーマンス要件
 
-### Gateway Intents
-- `GUILDS` - サーバー情報
-- `GUILD_MESSAGES` - サーバーメッセージ
-- `DIRECT_MESSAGES` - DM
-- `MESSAGE_CONTENT` (Privileged) - メッセージ本文
-
-## アーキテクチャ方針
-
-### 拡張性
-- `INotificationSource` インターフェースでサービス抽象化
-- 将来のプラグインシステムを見据えた設計（MVP時点では固定実装）
-- 統一 `NotificationEvent` モデルで全サービスの通知を正規化
-
-### パフォーマンス要件
 - FPS影響: ベースFPSの5%以内（最大3fps低下）
 - メモリ: 通常時150MB以下
 - CPU: アイドル時1%以下、通知処理時5%以下
-- テクスチャ更新: 通知表示中のみ30fps
+- テクスチャ更新: 通知表示中のみ
 
-### 段階的リリース計画
-- **Phase 1 (MVP)**: Discord + Slack + 基本UI + DND + 通知履歴 + 通知音
-- **Phase 2**: プロファイル + 配信モード + コントローラー振動 + スケジュールDND
-- **Phase 3**: プラグインシステム + Chatwork + 返信機能 + 自動アップデート
+## 段階的リリース計画
+
+- **Phase 1 (Booth MVP)**: ✅ 完了 — Windows通知 + VR表示 + アプリフィルタ + DND + 設定UI + 履歴 + インストーラー
+- **Phase 2**: 通知音 + プロファイル切替 + 配信モード
+- **Phase 3**: Discord/Slack Bot連携 + プラグインシステム + 自動アップデート + VR内返信

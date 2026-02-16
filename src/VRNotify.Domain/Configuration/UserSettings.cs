@@ -45,4 +45,19 @@ public sealed class UserSettings : Entity
 
     public void UpdateAudio(AudioConfig config) => Audio = config;
     public void UpdateHistory(HistoryConfig config) => History = config;
+
+    /// <summary>
+    /// Reconstitution constructor for persistence. Do not use for new settings.
+    /// </summary>
+    internal UserSettings(
+        Guid activeProfileId,
+        AudioConfig audio,
+        HistoryConfig history,
+        IEnumerable<Profile> profiles)
+    {
+        ActiveProfileId = activeProfileId;
+        Audio = audio;
+        History = history;
+        _profiles.AddRange(profiles);
+    }
 }

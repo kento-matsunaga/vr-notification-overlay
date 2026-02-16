@@ -27,6 +27,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRNotify.Integration.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRNotify.Overlay.Prototype", "tests\VRNotify.Overlay.Prototype\VRNotify.Overlay.Prototype.csproj", "{9C27837A-6033-41F9-8FF6-6867302CCD88}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRNotify.NotificationListener.Prototype", "tests\VRNotify.NotificationListener.Prototype\VRNotify.NotificationListener.Prototype.csproj", "{082AD538-44A5-4289-A939-7508F3B7FAD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRNotify.Integration.Prototype", "tests\VRNotify.Integration.Prototype\VRNotify.Integration.Prototype.csproj", "{929BE9A4-91CA-4ECF-8E69-800CBE95B7C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRNotify.Infrastructure.Tests", "tests\VRNotify.Infrastructure.Tests\VRNotify.Infrastructure.Tests.csproj", "{F8BD0DDE-A009-4B7D-98C8-DCB2EE6A0DF8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +82,18 @@ Global
 		{9C27837A-6033-41F9-8FF6-6867302CCD88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C27837A-6033-41F9-8FF6-6867302CCD88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C27837A-6033-41F9-8FF6-6867302CCD88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{082AD538-44A5-4289-A939-7508F3B7FAD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{082AD538-44A5-4289-A939-7508F3B7FAD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{082AD538-44A5-4289-A939-7508F3B7FAD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{082AD538-44A5-4289-A939-7508F3B7FAD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{929BE9A4-91CA-4ECF-8E69-800CBE95B7C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{929BE9A4-91CA-4ECF-8E69-800CBE95B7C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{929BE9A4-91CA-4ECF-8E69-800CBE95B7C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{929BE9A4-91CA-4ECF-8E69-800CBE95B7C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8BD0DDE-A009-4B7D-98C8-DCB2EE6A0DF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8BD0DDE-A009-4B7D-98C8-DCB2EE6A0DF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8BD0DDE-A009-4B7D-98C8-DCB2EE6A0DF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8BD0DDE-A009-4B7D-98C8-DCB2EE6A0DF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A9CC3489-6D84-4188-B9E4-D2DFF93B1145} = {706EF90F-9296-4042-8BF4-34A9461171E4}
@@ -88,5 +106,8 @@ Global
 		{D4FC3761-42FC-4ED5-9BFD-0FF47F9C3538} = {654CC3B3-E423-4FC3-B46C-B50E20B6BBD2}
 		{0D628C6D-7A66-4EEB-9984-C4C1EAC8F02B} = {654CC3B3-E423-4FC3-B46C-B50E20B6BBD2}
 		{9C27837A-6033-41F9-8FF6-6867302CCD88} = {654CC3B3-E423-4FC3-B46C-B50E20B6BBD2}
+		{082AD538-44A5-4289-A939-7508F3B7FAD8} = {654CC3B3-E423-4FC3-B46C-B50E20B6BBD2}
+		{929BE9A4-91CA-4ECF-8E69-800CBE95B7C9} = {654CC3B3-E423-4FC3-B46C-B50E20B6BBD2}
+		{F8BD0DDE-A009-4B7D-98C8-DCB2EE6A0DF8} = {654CC3B3-E423-4FC3-B46C-B50E20B6BBD2}
 	EndGlobalSection
 EndGlobal

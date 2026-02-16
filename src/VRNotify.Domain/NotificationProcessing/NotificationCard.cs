@@ -63,4 +63,37 @@ public sealed class NotificationCard : Entity
     {
         Body += "\n" + additionalText;
     }
+
+    /// <summary>
+    /// Reconstitution constructor for persistence. Do not use for new notifications.
+    /// </summary>
+    internal NotificationCard(
+        Guid cardId,
+        Guid originEventId,
+        SourceType sourceType,
+        Priority priority,
+        NotificationState state,
+        string title,
+        string body,
+        string senderDisplay,
+        string? senderAvatarUrl,
+        DateTimeOffset createdAt,
+        DateTimeOffset? displayedAt,
+        DateTimeOffset? readAt,
+        TimeSpan displayDuration)
+    {
+        CardId = cardId;
+        OriginEventId = originEventId;
+        SourceType = sourceType;
+        Priority = priority;
+        State = state;
+        Title = title;
+        Body = body;
+        SenderDisplay = senderDisplay;
+        SenderAvatarUrl = senderAvatarUrl;
+        CreatedAt = createdAt;
+        DisplayedAt = displayedAt;
+        ReadAt = readAt;
+        DisplayDuration = displayDuration;
+    }
 }

@@ -1,6 +1,8 @@
 # Build results
 [Dd]ebug/
 [Rr]elease/
+publish/
+dist/
 x64/
 x86/
 [Aa][Rr][Mm]/

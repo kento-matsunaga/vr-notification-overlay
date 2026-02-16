@@ -6,5 +6,6 @@ public enum FilterRuleType
     Channel,
     Sender,
     Keyword,
-    TimePeriod
+    TimePeriod,
+    AppName
 }

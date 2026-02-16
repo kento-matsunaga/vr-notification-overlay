@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="VRNotify.Infrastructure" />
+    <InternalsVisibleTo Include="VRNotify.Infrastructure.Tests" />
+  </ItemGroup>
+
 </Project>

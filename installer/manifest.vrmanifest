@@ -1,0 +1,17 @@
+{
+  "source": "builtin",
+  "applications": [
+    {
+      "app_key": "com.vrnotify.overlay",
+      "launch_type": "binary",
+      "binary_path_windows": "VRNotify.Desktop.exe",
+      "is_dashboard_overlay": true,
+      "strings": {
+        "en_us": {
+          "name": "VRNotify",
+          "description": "VR Notification Overlay - Display Windows notifications in VR"
+        }
+      }
+    }
+  ]
+}

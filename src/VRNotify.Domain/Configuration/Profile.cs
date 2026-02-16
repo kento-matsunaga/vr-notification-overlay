@@ -38,4 +38,25 @@ public sealed class Profile : Entity
     }
 
     public void DisableSource(Guid sourceId) => _enabledSourceIds.Remove(sourceId);
+
+    /// <summary>
+    /// Reconstitution constructor for persistence. Do not use for new profiles.
+    /// </summary>
+    internal Profile(
+        Guid profileId,
+        string name,
+        bool isDefault,
+        DisplayConfig display,
+        DndSettings dnd,
+        IEnumerable<FilterRule> filterRules,
+        IEnumerable<Guid> enabledSourceIds)
+    {
+        ProfileId = profileId;
+        Name = name;
+        IsDefault = isDefault;
+        Display = display;
+        Dnd = dnd;
+        _filterRules.AddRange(filterRules);
+        _enabledSourceIds.AddRange(enabledSourceIds);
+    }
 }
