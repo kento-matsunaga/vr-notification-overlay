@@ -1,0 +1,48 @@
+session:
+  date: "2026-02-16"
+  milestone: M005
+  title: "OpenVRオーバーレイ プロトタイプ"
+  environment: "Windows 11, .NET 8 SDK 8.0.418, SteamVR, Claude Code"
+
+summary: |
+  M005 OpenVRオーバーレイプロトタイプを実装し、SteamVR上で動作確認完了。
+  ハードコードしたDiscord通知カードをVR内に表示するプロトタイプ。
+
+completed_tasks:
+  - "SkiaNotificationRenderer 実装（512x128 RGBA、半透明ダーク背景、サービスボーダー、テキスト描画）"
+  - "OpenVrOverlayManager 実装（OVRSharp 1.2.0、HMD追従、PNG経由テクスチャ設定）"
+  - "プロトタイプ Program.cs 作成（コンソールアプリ、30秒表示）"
+  - "VRNotify.Overlay.Prototype プロジェクト作成・ソリューション追加"
+  - "SteamVR上で動作確認完了"
+  - "既存83テスト全PASS維持"
+
+files_created:
+  - "tests/VRNotify.Overlay.Prototype/VRNotify.Overlay.Prototype.csproj"
+  - "tests/VRNotify.Overlay.Prototype/Program.cs"
+
+files_modified:
+  - "src/VRNotify.Overlay/Rendering/SkiaNotificationRenderer.cs"
+  - "src/VRNotify.Overlay/OpenVR/OpenVrOverlayManager.cs"
+  - "VRNotify.sln"
+  - "memory/index.yaml"
+
+technical_notes:
+  - "OVRSharp 1.2.0: TrackedDeviceRole はネスト型のため、OpenVR APIを直接使用してHMD追従を実装"
+  - "テクスチャ設定: SetOverlayRaw より SetTextureFromFile (PNG経由) の方が確実"
+  - "SkiaSharp: SKPixmap.GetPixelSpan().ToArray() でRGBAバイト配列取得"
+  - "オーバーレイ位置: HMD相対 X=0, Y=0.1, Z=-0.8 (0.8m前方、やや上)"
+  - "Console.ReadLine() はClaude Code経由だと即return するため、Task.Delay ループで待機"
+
+issues_resolved:
+  - issue: ".NET SDK未インストール"
+    resolution: "winget install Microsoft.DotNet.SDK.8 でSDK 8.0.418をインストール"
+  - issue: "TrackedDeviceRole がビルドエラー"
+    resolution: "OVRSharp 1.2.0ではネスト型のため、OpenVR.Overlay.SetOverlayTransformTrackedDeviceRelative を直接呼び出し"
+  - issue: "SKPixmap.ReadPixels の引数不一致"
+    resolution: "SKSurface.PeekPixels().GetPixelSpan().ToArray() に変更"
+  - issue: "VRオーバーレイが見えない（1回目）"
+    resolution: "Console.ReadLine() が即returnしてプログラム終了。Task.Delay ループ方式に変更"
+
+next_steps:
+  - "M006: Discord Bot プロトタイプ（Discord.Netでメッセージ受信→コンソール表示）"
+  - "M008: 統合プロトタイプ（Discord→VRオーバーレイ表示の一気通貫）"

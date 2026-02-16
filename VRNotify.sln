@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRNotify.Application.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRNotify.Integration.Tests", "tests\VRNotify.Integration.Tests\VRNotify.Integration.Tests.csproj", "{0D628C6D-7A66-4EEB-9984-C4C1EAC8F02B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRNotify.Overlay.Prototype", "tests\VRNotify.Overlay.Prototype\VRNotify.Overlay.Prototype.csproj", "{9C27837A-6033-41F9-8FF6-6867302CCD88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{0D628C6D-7A66-4EEB-9984-C4C1EAC8F02B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D628C6D-7A66-4EEB-9984-C4C1EAC8F02B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D628C6D-7A66-4EEB-9984-C4C1EAC8F02B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C27837A-6033-41F9-8FF6-6867302CCD88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C27837A-6033-41F9-8FF6-6867302CCD88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C27837A-6033-41F9-8FF6-6867302CCD88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C27837A-6033-41F9-8FF6-6867302CCD88}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A9CC3489-6D84-4188-B9E4-D2DFF93B1145} = {706EF90F-9296-4042-8BF4-34A9461171E4}
@@ -81,5 +87,6 @@ Global
 		{A1011347-643E-47B6-9082-0E47AF09EA36} = {654CC3B3-E423-4FC3-B46C-B50E20B6BBD2}
 		{D4FC3761-42FC-4ED5-9BFD-0FF47F9C3538} = {654CC3B3-E423-4FC3-B46C-B50E20B6BBD2}
 		{0D628C6D-7A66-4EEB-9984-C4C1EAC8F02B} = {654CC3B3-E423-4FC3-B46C-B50E20B6BBD2}
+		{9C27837A-6033-41F9-8FF6-6867302CCD88} = {654CC3B3-E423-4FC3-B46C-B50E20B6BBD2}
 	EndGlobalSection
 EndGlobal

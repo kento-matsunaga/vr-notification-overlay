@@ -7,7 +7,7 @@ project:
   status: development  # planning | development | testing | release
   current_phase: pre-mvp  # pre-mvp | mvp-phase1 | mvp-phase2 | mvp-phase3
   created_at: "2026-02-16"
-  last_updated: "2026-02-16"
+  last_updated: "2026-02-17"
 
 # 完了したマイルストーン
 completed_milestones:
@@ -41,10 +41,9 @@ next_milestones:
 
   - id: M005
     name: "OpenVRオーバーレイ プロトタイプ"
-    status: pending
-    description: "OVRSharpで最小限のオーバーレイ表示を確認"
-    handoff: "memory/handoff-m005-windows.md"
-    note: "Windows環境で実行が必要。詳細実装仕様はhandoffファイル参照。"
+    status: completed
+    completed_at: "2026-02-16"
+    description: "OVRSharp + SkiaSharpでハードコード通知カードをSteamVRオーバーレイとしてVR内に表示。HMD追従、テキスト描画、PNG経由テクスチャロードで動作確認済み。"
 
   - id: M006
     name: "Discord Bot プロトタイプ"
@@ -94,3 +93,6 @@ sessions:
   - file: "sessions/2026-02-16_domain-tests.yaml"
     date: "2026-02-16"
     summary: "ドメイン層ユニットテスト83件作成・全PASS"
+  - file: "sessions/2026-02-16_m005-overlay-prototype.yaml"
+    date: "2026-02-16"
+    summary: "M005完了。OpenVRオーバーレイプロトタイプ実装、SteamVR上で動作確認"
