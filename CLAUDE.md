@@ -116,10 +116,13 @@ docs/
 
 ハードコードした通知カードをSteamVRオーバーレイとしてVR内に表示するプロトタイプ。
 
+**Windows環境で初めて作業する場合は `memory/windows-bootstrap.md` を最初に読むこと。**
+Step-by-stepで読むべきファイル・作成するディレクトリ・実行コマンドが全て書いてある。
+
 作業手順:
-1. `dotnet restore && dotnet build VRNotify.sln` で全プロジェクトビルド確認
-2. `dotnet test tests/VRNotify.Domain.Tests/` で83テスト全PASS確認
-3. `memory/handoff-m005-windows.md` を読み、Phase C の実装を行う
+1. `memory/windows-bootstrap.md` を読む（全体の作業フロー）
+2. `memory/handoff-m005-windows.md` を読む（実装の技術仕様）
+3. 指示に従ってビルド確認→実装→テスト→コミット
 
 ### プロジェクト構造
 ```
