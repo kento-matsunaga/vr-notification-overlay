@@ -93,9 +93,20 @@ public sealed class SkiaNotificationRenderer : IOverlayRenderer
         canvas.DrawCircle(width - 16f, 16f, 5f, paint);
     }
 
+    private static readonly string FontFamily = ResolveFont();
+
+    private static string ResolveFont()
+    {
+        // Yu Gothic UI supports CJK + Latin; fall back to Segoe UI for non-JP Windows
+        using var test = SKTypeface.FromFamilyName("Yu Gothic UI");
+        return test is not null && test.FamilyName == "Yu Gothic UI"
+            ? "Yu Gothic UI"
+            : "Segoe UI";
+    }
+
     private static void DrawText(SKCanvas canvas, NotificationCard card)
     {
-        var typeface = SKTypeface.FromFamilyName("Segoe UI") ?? SKTypeface.Default;
+        var typeface = SKTypeface.FromFamilyName(FontFamily) ?? SKTypeface.Default;
 
         // Sender name
         using var senderPaint = new SKPaint
@@ -103,7 +114,7 @@ public sealed class SkiaNotificationRenderer : IOverlayRenderer
             Color = SenderTextColor,
             TextSize = 16f,
             IsAntialias = true,
-            Typeface = SKTypeface.FromFamilyName("Segoe UI", SKFontStyleWeight.Bold,
+            Typeface = SKTypeface.FromFamilyName(FontFamily, SKFontStyleWeight.Bold,
                 SKFontStyleWidth.Normal, SKFontStyleSlant.Upright) ?? typeface
         };
         var senderX = BorderWidth + PaddingLeft;
