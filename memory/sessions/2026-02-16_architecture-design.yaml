@@ -1,0 +1,109 @@
+# Session: Architecture Design (M004)
+# Date: 2026-02-16
+
+milestone: M004
+status: completed
+duration_estimate: "~2 hours"
+
+decisions_made:
+  - topic: "Process model"
+    decision: "Single process (not sidecar)"
+    reason: "Simpler for MVP, avoids IPC complexity"
+
+  - topic: "Event dispatch"
+    decision: "MediatR for CQRS + domain events"
+    reason: "Industry standard, clean decoupling"
+
+  - topic: "Output artifacts"
+    decision: "docs/architecture.md + .sln scaffold"
+    reason: "Both documentation and runnable code"
+
+artifacts_created:
+  documentation:
+    - docs/architecture.md  # 14 sections, comprehensive architecture doc
+
+  solution_scaffold:
+    - VRNotify.sln
+    - src/VRNotify.Domain/VRNotify.Domain.csproj          # net8.0, no deps
+    - src/VRNotify.Application/VRNotify.Application.csproj  # MediatR
+    - src/VRNotify.Infrastructure/VRNotify.Infrastructure.csproj  # Discord.Net, SlackNet, SQLite, DPAPI, Serilog
+    - src/VRNotify.Overlay/VRNotify.Overlay.csproj          # OVRSharp 1.*, SkiaSharp
+    - src/VRNotify.Host/VRNotify.Host.csproj                # Composition root
+    - src/VRNotify.Desktop/VRNotify.Desktop.csproj          # WPF (net8.0-windows)
+    - tests/VRNotify.Domain.Tests/VRNotify.Domain.Tests.csproj
+    - tests/VRNotify.Application.Tests/VRNotify.Application.Tests.csproj
+    - tests/VRNotify.Integration.Tests/VRNotify.Integration.Tests.csproj
+
+  domain_layer:  # 44 files
+    common:
+      - src/VRNotify.Domain/Common/IDomainEvent.cs
+      - src/VRNotify.Domain/Common/Entity.cs
+    source_connection:
+      - SourceType, ConnectionState, EncryptedCredential, ReconnectPolicy
+      - ISourceAdapter (port), NotificationSource (aggregate)
+      - Events: SourceConnectedEvent, SourceDisconnectedEvent, NotificationReceivedEvent
+    notification_processing:
+      - Priority, NotificationState, MentionType, FilterRuleType, FilterCondition
+      - SenderInfo, ChannelInfo, MessageContent, NotificationEvent, FilterRule, FilterResult
+      - NotificationCard (aggregate), IFilterChain, INotificationQueue, INotificationHistory
+      - Events: NotificationCardCreatedEvent, NotificationCardExpiredEvent
+    vr_display:
+      - DisplayPosition, DisplaySlot, OverlayConfig
+      - IOverlayRenderer, IOverlayManager
+    configuration:
+      - DndMode, DndSettings, DisplayConfig, AudioConfig, HistoryConfig
+      - Profile (entity), UserSettings (entity)
+      - ISettingsRepository, ICredentialStore
+      - Events: SettingsChangedEvent, DndModeChangedEvent
+
+  application_layer:  # 10 files
+    - Common/DomainEventNotification.cs (MediatR adapter)
+    - SourceConnection/Commands: AddSourceCommand, RemoveSourceCommand
+    - NotificationProcessing/Services: FilterChainService, PriorityResolver, NotificationBundler
+    - NotificationProcessing/EventHandlers: NotificationReceivedEventHandler
+    - VRDisplay/Services: DisplaySlotManager
+    - Configuration/Commands: ToggleDndCommand
+    - Configuration/Queries: GetSettingsQuery
+
+  infrastructure_layer:  # 7 files
+    - Discord/DiscordSourceAdapter, Slack/SlackSourceAdapter (stubs)
+    - Persistence/JsonSettingsRepository, SqliteNotificationHistory (stubs)
+    - Security/DpapiCredentialStore (stub)
+    - Queuing/ChannelNotificationQueue (fully functional, Channel<T> based)
+    - Filtering/DefaultFilterChain (stub)
+
+  overlay_layer:  # 3 files
+    - OpenVR/OpenVrOverlayManager, Rendering/SkiaNotificationRenderer (stubs)
+    - Tracking/IPositionTracker (interface)
+
+  host_layer:  # 4 files
+    - HostedServices: OpenVrHostedService, SourceConnectionService, NotificationDisplayService
+    - DependencyInjection/ServiceRegistration
+
+  desktop_layer:  # 1 file
+    - ViewModels/MainViewModel (placeholder)
+
+build_results:
+  host_and_deps: "Build succeeded (4 warnings - unused events in stubs)"
+  domain_tests: "Build succeeded (0 warnings)"
+  application_tests: "Build succeeded (0 warnings)"
+  integration_tests: "Build succeeded (0 warnings)"
+  desktop: "Skipped (WPF requires Windows)"
+
+issues_resolved:
+  - issue: "dotnet command not found"
+    fix: "Installed .NET 8 SDK (8.0.418) to ~/.dotnet via official script"
+
+  - issue: "OVRSharp version 4.* not found"
+    fix: "Changed to 1.* (latest is 1.2.0)"
+
+  - issue: "SlackNet.SocketMode package not found"
+    fix: "Changed to SlackNet (Socket Mode included in main package)"
+
+  - issue: "WPF template unavailable on Linux"
+    fix: "Created as classlib, manually edited csproj for WPF settings"
+
+environment_notes:
+  - "Development on WSL2 (Linux). .NET SDK at ~/.dotnet requires PATH export."
+  - "Desktop (WPF) and Overlay runtime (OpenVR) require Windows for execution."
+  - "Domain, Application, Infrastructure, Host all build fine on Linux."

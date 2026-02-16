@@ -1,0 +1,96 @@
+# セッション記録: 2026-02-16 初回プランニング
+session:
+  date: "2026-02-16"
+  duration_approx: "~1.5h"
+  phase: "planning"
+  summary: "プロジェクト立ち上げ。競合調査、BDD作成、主要決定事項の確定を実施。"
+
+# このセッションで実施したこと
+activities:
+  - order: 1
+    type: research
+    title: "競合調査"
+    details: |
+      VRオーバーレイ通知の既存ソリューションを調査:
+      - XSOverlay: WebSocket/UDP API、サードパーティ経由通知。~1,010円
+      - OVR Toolkit: Windows通知ネイティブ受信。~$10.99
+      - Desktop+: 無料OSS、通知機能なし
+      - VRCX: VRChat専用、XSOverlay連携あり
+      - Ovrlay: Discord専用、開発初期
+
+      市場ギャップ: Chatwork/LINE/Slack直接統合は皆無。
+      フィルタリング・優先度制御が不足。
+
+  - order: 2
+    type: research
+    title: "技術的実現性調査"
+    details: |
+      - OpenVR IVROverlay API: C#バインディング(OVRSharp)が成熟
+      - Discord: Gateway WebSocket (Bot API) が最適
+      - Slack: Socket Mode が公開サーバー不要でローカル開発に最適
+      - Chatwork: REST APIポーリング (5分300リクエスト制限)
+      - Windows通知: UserNotificationListener API (UWP)
+      結論: C#/.NET + OVRSharp ベースで十分実現可能
+
+  - order: 3
+    type: design
+    title: "BDDシナリオ作成（3視点）"
+    details: |
+      3つのエージェントを並行実行して以下を作成:
+
+      UX/ユーザー体験視点 (agent: a298937):
+      - 通知表示体験 (位置、視認性、アニメーション、スタック)
+      - インタラクション (スワイプ閉じ、詳細表示、DND)
+      - セットアップフロー (OAuth2、チャンネル選択)
+      - 日常使用フロー (自動起動、ワールド移動対応)
+
+      ビジネスドメイン視点 (agent: ac68802):
+      - ユビキタス言語・用語集 (17用語)
+      - ドメインモデル図とエンティティ定義
+      - ビジネスルール (優先度、表示、フィルタ、接続、履歴)
+      - 境界づけられたコンテキスト (4コンテキスト)
+      - ソース管理・フィルタ・ライフサイクル・設定のBDD
+
+      技術エッジケース視点 (agent: a655716):
+      - 接続安定性・障害復旧 (Discord/Slack/SteamVR/ネットワーク)
+      - パフォーマンス・資源管理 (FPS、メモリ、CPU)
+      - 通知バースト対応 (レート制限、グルーピング)
+      - セキュリティ (トークン保護、コンテンツ無害化)
+      - OpenVR連携エッジケース (上限、HMD脱着、共存)
+
+      合計約115シナリオ
+
+  - order: 4
+    type: decision
+    title: "主要決定事項の確定"
+    details: |
+      ユーザーとの対話で以下を確定:
+      - Discord: OAuth2 + Bot混合方式
+      - 表示位置: 全方式実装、設定切替（デフォルトは後日決定）
+      - 返信機能: MVPに含めない
+      - MVPスコープ: 標準MVP (Discord + Slack + フィルタ + DND + 履歴)
+      - 通知音: MVPに含む（音のみ、振動なし）
+      - 配布: 将来Steam販売
+      - デスクトップUI: WPF
+
+# 作成・更新したファイル
+files_created:
+  - path: "docs/decisions.md"
+    description: "全決定事項・技術スタック・MVPスコープ"
+  - path: "docs/bdd/01_ux_user_experience.feature"
+    description: "UX視点BDD: 表示体験・没入感 (20シナリオ)"
+  - path: "docs/bdd/02_ux_interaction.feature"
+    description: "UX視点BDD: インタラクション・セットアップ・日常フロー (25シナリオ)"
+  - path: "docs/bdd/03_domain_model.md"
+    description: "ドメインモデル・用語集・ビジネスルール"
+  - path: "docs/bdd/04_domain_bdd.feature"
+    description: "ドメイン視点BDD: ソース管理・フィルタ・ライフサイクル (30シナリオ)"
+  - path: "docs/bdd/05_technical_edge_cases.feature"
+    description: "技術視点BDD: 障害復旧・パフォーマンス・セキュリティ (40シナリオ)"
+
+# 次回セッションへの引き継ぎ
+next_session_tasks:
+  - "アーキテクチャ設計（プロジェクト構造、クラス設計）"
+  - "OpenVRオーバーレイの最小プロトタイプ"
+  - "Discord.Netの接続プロトタイプ"
+  - "通知のデフォルト表示位置を決めるためのテスト計画"

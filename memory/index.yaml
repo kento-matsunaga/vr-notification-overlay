@@ -1,0 +1,85 @@
+# VRNotify プロジェクト進捗インデックス
+# このファイルはプロジェクト全体の状態を追跡する
+# 各セッションでの作業は sessions/ 配下に記録する
+
+project:
+  name: VRNotify
+  status: development  # planning | development | testing | release
+  current_phase: pre-mvp  # pre-mvp | mvp-phase1 | mvp-phase2 | mvp-phase3
+  created_at: "2026-02-16"
+  last_updated: "2026-02-16"
+
+# 完了したマイルストーン
+completed_milestones:
+  - id: M001
+    name: "競合調査・実現性調査"
+    completed_at: "2026-02-16"
+    summary: "XSOverlay, OVR Toolkit, Desktop+, VRCX等の競合分析完了。技術的実現可能性を確認。"
+
+  - id: M002
+    name: "BDDシナリオ作成・要件定義"
+    completed_at: "2026-02-16"
+    summary: "3視点(UX/ドメイン/技術)からBDDシナリオ約115件作成。ドメインモデル・用語集確立。"
+
+  - id: M003
+    name: "技術・ビジネス決定事項確定"
+    completed_at: "2026-02-16"
+    summary: "技術スタック、MVPスコープ、Discord連携方式、配布形態等の主要決定完了。"
+
+  - id: M004
+    name: "アーキテクチャ設計"
+    completed_at: "2026-02-16"
+    summary: "Clean Architecture 6層構成(Domain/Application/Infrastructure/Overlay/Host/Desktop) + 3テストプロジェクト。docs/architecture.md作成、全プロジェクトビルド成功。"
+
+# 次のマイルストーン（未着手）
+next_milestones:
+  - id: M005
+    name: "OpenVRオーバーレイ プロトタイプ"
+    status: pending
+    description: "OVRSharpで最小限のオーバーレイ表示を確認"
+
+  - id: M006
+    name: "Discord Bot プロトタイプ"
+    status: pending
+    description: "Discord.Netでメッセージ受信→コンソール表示を確認"
+
+  - id: M007
+    name: "Slack Socket Mode プロトタイプ"
+    status: pending
+    description: "Slack Socket Modeでメッセージ受信を確認"
+
+  - id: M008
+    name: "統合プロトタイプ"
+    status: pending
+    description: "Discord/Slackメッセージ→VRオーバーレイ表示の統合動作確認"
+
+  - id: M009
+    name: "MVP実装"
+    status: pending
+    description: "フィルタリング、DND、履歴、設定UI等の完全なMVP実装"
+
+# 未解決の課題・検討事項
+open_questions:
+  - id: Q001
+    question: "通知のデフォルト表示位置（HMD上部/下部/手首）"
+    status: deferred
+    note: "全方式実装後にテストして決定"
+
+  - id: Q002
+    question: "Steam販売時のDiscord Privileged Intent申請"
+    status: deferred
+    note: "100サーバー超になった時点で対応"
+
+  - id: Q003
+    question: "通知履歴にメッセージ本文をどこまで保存するか"
+    status: open
+    note: "プライバシーとSlack APIポリシーとの整合性要確認"
+
+# セッション一覧
+sessions:
+  - file: "sessions/2026-02-16_initial-planning.yaml"
+    date: "2026-02-16"
+    summary: "初回セッション。競合調査→BDD作成→決定事項確定"
+  - file: "sessions/2026-02-16_architecture-design.yaml"
+    date: "2026-02-16"
+    summary: "M004完了。アーキテクチャ設計、.slnスキャフォールド、全ドメイン/Application/Infrastructure/Overlay/Host層の実装"

@@ -1,0 +1,83 @@
+# VRNotify 開発規約・コンベンション
+
+# ============================================================
+# コーディング規約
+# ============================================================
+coding:
+  language: "C#"
+  framework: ".NET 8"
+  style:
+    - "Microsoft C# コーディング規約に準拠"
+    - "コード内コメントは英語"
+    - "ドキュメント・BDDシナリオの説明文は日本語"
+    - "Gherkinキーワード(Feature, Scenario, Given, When, Then)は英語"
+  naming:
+    namespaces: "VRNotify.{Context}.{SubNamespace}"
+    interfaces: "I{Name} (例: INotificationSource)"
+    events: "{Past tense} (例: NotificationReceived, ConnectionLost)"
+    settings: "VRNotifySettings"
+  error_handling:
+    - "外部API呼び出しは必ずtry-catchで包む"
+    - "未知のイベント/フィールドは無視してログに記録（クラッシュさせない）"
+    - "トークンはログに絶対出力しない（先頭4文字+****マスク）"
+
+# ============================================================
+# プロジェクト構造（予定）
+# ============================================================
+project_structure:
+  solution: "VRNotify.sln"
+  projects:
+    - name: "VRNotify.Core"
+      type: "classlib"
+      description: "ドメインモデル、インターフェース、共通ロジック"
+    - name: "VRNotify.Sources.Discord"
+      type: "classlib"
+      description: "Discord連携 (OAuth2 + Bot Gateway)"
+    - name: "VRNotify.Sources.Slack"
+      type: "classlib"
+      description: "Slack連携 (Socket Mode)"
+    - name: "VRNotify.Overlay"
+      type: "classlib"
+      description: "OpenVRオーバーレイ管理、テクスチャ描画"
+    - name: "VRNotify.App"
+      type: "wpf"
+      description: "WPFデスクトップUI + アプリケーションホスト"
+    - name: "VRNotify.Tests"
+      type: "xunit"
+      description: "ユニットテスト + BDDテスト"
+
+# ============================================================
+# メモリ管理規約（このディレクトリ）
+# ============================================================
+memory_conventions:
+  index_yaml:
+    purpose: "プロジェクト全体の状態・マイルストーン追跡"
+    update_when: "マイルストーン完了時、新しい課題発見時"
+  sessions:
+    purpose: "各開発セッションの詳細記録"
+    naming: "YYYY-MM-DD_{topic}.yaml"
+    required_fields:
+      - "date, summary, activities, files_created, next_session_tasks"
+  domain_knowledge:
+    purpose: "技術知識・API仕様・注意点の蓄積"
+    update_when: "新しい技術的知見を得た時"
+  conventions:
+    purpose: "このファイル。開発規約・コンベンション"
+    update_when: "規約の変更・追加時"
+
+# ============================================================
+# Git規約（将来）
+# ============================================================
+git:
+  branch_strategy: "main + feature branches"
+  commit_style: "Conventional Commits (feat:, fix:, docs:, refactor:, test:)"
+  commit_language: "英語"
+
+# ============================================================
+# テスト規約
+# ============================================================
+testing:
+  unit_tests: "xUnit + Moq"
+  bdd_tests: "SpecFlow (将来)"
+  performance_tests: "実機VR HMD必須"
+  ci_tests: "モック可能なテストのみCI対象"

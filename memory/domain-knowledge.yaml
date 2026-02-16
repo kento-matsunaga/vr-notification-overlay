@@ -1,0 +1,123 @@
+# VRNotify ドメイン知識ベース
+# プロジェクト固有の技術知識・注意点・学びを記録する
+
+# ============================================================
+# OpenVR / SteamVR 知識
+# ============================================================
+openvr:
+  overlay_api:
+    summary: "IVROverlay APIでVRアプリの上にオーバーレイを描画"
+    key_points:
+      - "オーバーレイアプリはVRApplication_Overlayとして初期化"
+      - "ゲームアプリとオーバーレイは別プロセス。それぞれ独立してSteamVRと通信"
+      - "オーバーレイキーはシステム全体でユニーク。推奨: 'jp.vrnotify.notification'"
+      - "k_unMaxOverlayCount = 128 (システム全体で共有)"
+      - "SetOverlayFromFile は最大 1920x1080"
+      - "テクスチャ更新はSetOverlayRaw()またはSetOverlayTexture()で動的に"
+    csharp_library:
+      name: "OVRSharp"
+      nuget: "OVRSharp"
+      dotnet_version: ".NET Standard 2.0+"
+      getting_started: "https://github.com/OVRTools/OVRSharp/wiki/Getting-Started"
+    position_types:
+      - "HMD追従 (TrackingUniverseSeated + HMDからの相対位置)"
+      - "コントローラー追従 (TrackedDeviceRelative)"
+      - "ワールド固定 (TrackingUniverseStanding + 絶対座標)"
+    known_issues:
+      - "ヘッドロックとワールドロックの同時混合は困難"
+      - "Steam VR Overlayが原因で3fps低下するケースあり"
+      - "OpenGLテクスチャIDのサイズキャッシュ問題あり"
+
+  steamvr_events:
+    important_events:
+      - "VREvent_Quit - SteamVRシャットダウン"
+      - "VREvent_TrackedDeviceUserInteractionStarted - HMD装着"
+      - "VREvent_TrackedDeviceUserInteractionStopped - HMD脱着"
+    auto_startup: "SteamVR manifest登録でSteamVR起動時に自動起動可能"
+
+# ============================================================
+# Discord API 知識
+# ============================================================
+discord:
+  connection_method: "OAuth2認証 + Bot Gateway (混合方式)"
+  oauth2:
+    scopes: ["identify", "guilds", "bot"]
+    flow: "Authorization Code Grant → localhost callback"
+  bot:
+    permissions: ["Read Messages/View Channels", "Read Message History"]
+    gateway_intents:
+      standard: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES"]
+      privileged: ["MESSAGE_CONTENT"]
+    privileged_intent_note: |
+      100サーバー未満のBotは開発者ポータルから自由に有効化可能。
+      100サーバー超はDiscordへの申請が必要。Steam販売時に注意。
+  gateway:
+    reconnection:
+      - "OpCode 7 (Reconnect) → resume接続試行"
+      - "OpCode 9 (Invalid Session) → 1-5秒ランダム遅延後フルリコネクト"
+      - "Heartbeat ACK未受信2回 → 接続切断→resume試行"
+    rate_limits:
+      - "HTTP 429 → Retry-Afterヘッダに従う"
+      - "Global Rate Limit → 全APIリクエスト停止"
+  csharp_library: "Discord.Net (NuGet: Discord.Net)"
+
+# ============================================================
+# Slack API 知識
+# ============================================================
+slack:
+  connection_method: "Socket Mode (WebSocket)"
+  setup:
+    - "Slack Appを作成"
+    - "App-Level Token (xapp-) を生成。スコープ: connections:write"
+    - "Socket Modeを有効化"
+    - "Event Subscriptionsでイベント購読 (message.channels, message.im等)"
+  advantages:
+    - "公開HTTPエンドポイント不要"
+    - "ローカルPC開発に最適"
+  reconnection:
+    - "disconnect (reason: refresh_requested) → 新接続確立後に旧接続クローズ"
+    - "接続断 → apps.connections.open APIで新WebSocket URL取得"
+    - "HTTP 401/403 → トークン無効。ユーザーに再設定案内"
+  csharp_note: "公式C# SDKなし。WebSocket汎用ライブラリで実装"
+
+# ============================================================
+# 競合製品の知識
+# ============================================================
+competitors:
+  xsoverlay:
+    price: "~1,010円"
+    api: "WebSocket (port 42070) + UDP通知"
+    strengths: "カスタマイズ性、メディア統合"
+    weaknesses: "最近のアップデートで不安定化、セットアップ複雑"
+  ovr_toolkit:
+    price: "~$10.99"
+    strengths: "Windows通知ネイティブ受信、マクロ機能"
+    weaknesses: "リソース消費多い、開発ペース低下"
+  desktop_plus:
+    price: "無料 (OSS, GPL 3.0)"
+    strengths: "低遅延ミラーリング、ブラウザオーバーレイ"
+    weaknesses: "通知機能なし"
+  market_gap: |
+    Chatwork/LINE/Slack直接統合は全製品で皆無。
+    通知のフィルタリング・優先度制御が不足。
+    日本市場特化ツールは存在しない。
+
+# ============================================================
+# パフォーマンス知見
+# ============================================================
+performance:
+  vr_impact:
+    - "オーバーレイ非表示時はHideOverlay()でGPU負荷ゼロに"
+    - "テクスチャ更新頻度は通知表示中のみ最大30fps"
+    - "テクスチャサイズは512x256程度が推奨"
+    - "複数通知は可能な限り1つのオーバーレイにまとめて描画"
+  memory:
+    - "テクスチャプール方式で再利用（新規確保を最小化）"
+    - "通知消去後5秒以内にテクスチャメモリ解放"
+    - "画像サムネイルは128x128px以下にリサイズ"
+  targets:
+    fps_drop_max: "3fps (ベースFPSの5%以内)"
+    memory_normal: "150MB以下"
+    memory_burst: "300MB以下"
+    cpu_idle: "1%以下"
+    cpu_active: "5%以下"
