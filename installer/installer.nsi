@@ -89,7 +89,7 @@ Section "Install"
     ; --- Start Menu Shortcut ---
     ; Launch via shell:AppsFolder AUMID so the process gets Package Identity
     CreateDirectory "$SMPROGRAMS\VRNotify"
-    CreateShortcut "$SMPROGRAMS\VRNotify\VRNotify.lnk" "explorer.exe" \
+    CreateShortcut "$SMPROGRAMS\VRNotify\VRNotify.lnk" "$WINDIR\explorer.exe" \
         "shell:AppsFolder\VRNotify_qpjsvqwttpe7c!VRNotifyApp"
     CreateShortcut "$SMPROGRAMS\VRNotify\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
