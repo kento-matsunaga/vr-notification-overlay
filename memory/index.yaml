@@ -43,6 +43,8 @@ next_milestones:
     name: "OpenVRオーバーレイ プロトタイプ"
     status: pending
     description: "OVRSharpで最小限のオーバーレイ表示を確認"
+    handoff: "memory/handoff-m005-windows.md"
+    note: "Windows環境で実行が必要。詳細実装仕様はhandoffファイル参照。"
 
   - id: M006
     name: "Discord Bot プロトタイプ"

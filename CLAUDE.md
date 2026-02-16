@@ -100,6 +100,45 @@ docs/
 - `memory/sessions/` に各セッションの作業ログ
 - `memory/index.yaml` にプロジェクト全体の状態サマリー
 
+## 現在の開発状態（2026-02-16時点）
+
+### 完了済みマイルストーン
+| ID | 名前 | 内容 |
+|----|------|------|
+| M001 | 競合調査 | XSOverlay等の競合分析、技術的実現可能性確認 |
+| M002 | BDD・要件定義 | 3視点から約115シナリオ作成、ドメインモデル確立 |
+| M003 | 技術・ビジネス決定 | 技術スタック、MVPスコープ等の主要決定完了 |
+| M004 | アーキテクチャ設計 | 6 srcプロジェクト + 3テストプロジェクト、全ビルド成功 |
+| M004.5 | ドメインテスト | 83テスト作成・全PASS（10ファイル） |
+
+### 次のタスク: M005 OpenVRオーバーレイ プロトタイプ
+**詳細な実装仕様は `memory/handoff-m005-windows.md` を参照のこと。**
+
+ハードコードした通知カードをSteamVRオーバーレイとしてVR内に表示するプロトタイプ。
+
+作業手順:
+1. `dotnet restore && dotnet build VRNotify.sln` で全プロジェクトビルド確認
+2. `dotnet test tests/VRNotify.Domain.Tests/` で83テスト全PASS確認
+3. `memory/handoff-m005-windows.md` を読み、Phase C の実装を行う
+
+### プロジェクト構造
+```
+VRNotify.sln
+├── src/
+│   ├── VRNotify.Domain/          # ドメイン層（44ファイル、完全実装済み）
+│   ├── VRNotify.Application/     # アプリケーション層（スタブ）
+│   ├── VRNotify.Infrastructure/  # インフラ層（スタブ）
+│   ├── VRNotify.Overlay/         # OpenVR/SkiaSharp（スタブ → M005で実装）
+│   ├── VRNotify.Host/            # ホストプロセス（スタブ）
+│   └── VRNotify.Desktop/         # WPF設定UI（スタブ、Windows専用）
+├── tests/
+│   ├── VRNotify.Domain.Tests/    # ドメインテスト（83テスト、全PASS）
+│   ├── VRNotify.Application.Tests/
+│   └── VRNotify.Integration.Tests/
+├── docs/                         # BDD/アーキテクチャドキュメント
+└── memory/                       # 進捗記録（YAML）
+```
+
 ## 参考プロジェクト
 - [OyasumiVR](https://github.com/Raphiiko/OyasumiVR) - SteamVRオーバーレイアプリの設計参考
 - [OpenVROverlayPipe](https://github.com/BOLL7708/OpenVROverlayPipe) - WebSocket経由のオーバーレイ制御
