@@ -1,50 +1,49 @@
-using MediatR;
-using VRNotify.Application.Common;
-using VRNotify.Application.NotificationProcessing.Services;
+using Serilog;
 using VRNotify.Domain.Configuration;
 using VRNotify.Domain.NotificationProcessing;
-using VRNotify.Domain.SourceConnection.Events;
 
-namespace VRNotify.Application.NotificationProcessing.EventHandlers;
+namespace VRNotify.Application.NotificationProcessing.Services;
 
-public sealed class NotificationReceivedEventHandler
-    : INotificationHandler<DomainEventNotification<NotificationReceivedEvent>>
+public sealed class NotificationPipelineService : INotificationPipelineService
 {
     private readonly ISettingsRepository _settingsRepository;
     private readonly IFilterChain _filterChain;
-    private readonly PriorityResolver _priorityResolver;
+    private readonly IPriorityResolver _priorityResolver;
     private readonly INotificationHistory _history;
     private readonly INotificationQueue _queue;
+    private readonly ILogger _logger;
 
-    public NotificationReceivedEventHandler(
+    public NotificationPipelineService(
         ISettingsRepository settingsRepository,
         IFilterChain filterChain,
-        PriorityResolver priorityResolver,
+        IPriorityResolver priorityResolver,
         INotificationHistory history,
-        INotificationQueue queue)
+        INotificationQueue queue,
+        ILogger logger)
     {
         _settingsRepository = settingsRepository;
         _filterChain = filterChain;
         _priorityResolver = priorityResolver;
         _history = history;
         _queue = queue;
+        _logger = logger.ForContext<NotificationPipelineService>();
     }
 
-    public async Task Handle(
-        DomainEventNotification<NotificationReceivedEvent> notification,
-        CancellationToken cancellationToken)
+    public async Task ProcessAsync(NotificationEvent notification, CancellationToken ct = default)
     {
-        var evt = notification.DomainEvent.Notification;
-        var settings = await _settingsRepository.LoadAsync(cancellationToken);
+        var settings = await _settingsRepository.LoadAsync(ct);
         var profile = settings.GetActiveProfile();
 
         // Filter
-        var filterResult = _filterChain.Evaluate(evt, profile.FilterRules);
+        var filterResult = _filterChain.Evaluate(notification, profile.FilterRules);
         if (!filterResult.IsAllowed)
+        {
+            _logger.Debug("Notification filtered out: {AppName}", notification.Sender.Name);
             return;
+        }
 
         // Priority
-        var priority = filterResult.OverridePriority ?? _priorityResolver.Resolve(evt);
+        var priority = filterResult.OverridePriority ?? _priorityResolver.Resolve(notification);
 
         // DND check
         if (profile.Dnd.Mode == DndMode.SuppressAll)
@@ -63,19 +62,21 @@ public sealed class NotificationReceivedEventHandler
         // Create card
         var card = new NotificationCard(
             Guid.NewGuid(),
-            evt.EventId,
-            evt.SourceType,
+            notification.EventId,
+            notification.SourceType,
             priority,
-            evt.Channel.Name,
-            evt.Content.TruncatedText,
-            evt.Sender.Name,
-            evt.Sender.AvatarUrl,
+            notification.Channel.Name,
+            notification.Content.TruncatedText,
+            notification.Sender.Name,
+            notification.Sender.AvatarUrl,
             duration);
 
         // Save history
-        await _history.SaveAsync(card, cancellationToken);
+        await _history.SaveAsync(card, ct);
 
         // Enqueue for display
-        await _queue.EnqueueAsync(card, cancellationToken);
+        await _queue.EnqueueAsync(card, ct);
+
+        _logger.Debug("Notification enqueued: {Title} from {App}", card.Title, card.SenderDisplay);
     }
 }

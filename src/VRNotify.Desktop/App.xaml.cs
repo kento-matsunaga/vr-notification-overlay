@@ -4,6 +4,7 @@ using Hardcodet.Wpf.TaskbarNotification;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using VRNotify.Application.Configuration.Services;
 using VRNotify.Desktop.ViewModels;
 using VRNotify.Desktop.Views;
 using VRNotify.Domain.Configuration;
@@ -150,14 +151,10 @@ public partial class App : WpfApplication
     {
         try
         {
-            var settingsRepo = _host?.Services.GetService<ISettingsRepository>();
-            if (settingsRepo is null) return;
+            var settingsService = _host?.Services.GetService<ISettingsService>();
+            if (settingsService is null) return;
 
-            var settings = await settingsRepo.LoadAsync();
-            var profile = settings.GetActiveProfile();
-            profile.UpdateDnd(new DndSettings(mode));
-            await settingsRepo.SaveAsync(settings);
-            Log.Information("DND mode changed to {Mode}", mode);
+            await settingsService.ToggleDndAsync(mode);
         }
         catch (Exception ex)
         {

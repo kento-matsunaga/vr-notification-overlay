@@ -1,12 +1,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using VRNotify.Application.Configuration.Services;
 using VRNotify.Domain.Configuration;
 
 namespace VRNotify.Desktop.ViewModels;
 
 public sealed partial class MainViewModel : ObservableObject
 {
-    private readonly ISettingsRepository _settingsRepository;
+    private readonly ISettingsService _settingsService;
 
     [ObservableProperty]
     private FilterViewModel _filter;
@@ -24,12 +25,12 @@ public sealed partial class MainViewModel : ObservableObject
     private bool _isLoading;
 
     public MainViewModel(
-        ISettingsRepository settingsRepository,
+        ISettingsService settingsService,
         FilterViewModel filter,
         DisplayViewModel display,
         HistoryViewModel history)
     {
-        _settingsRepository = settingsRepository;
+        _settingsService = settingsService;
         _filter = filter;
         _display = display;
         _history = history;
@@ -41,7 +42,7 @@ public sealed partial class MainViewModel : ObservableObject
         IsLoading = true;
         try
         {
-            var settings = await _settingsRepository.LoadAsync();
+            var settings = await _settingsService.LoadAsync();
             var profile = settings.GetActiveProfile();
             CurrentDndMode = profile.Dnd.Mode;
             Filter.LoadFromProfile(profile);
@@ -56,20 +57,17 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task SetDndModeAsync(DndMode mode)
     {
-        var settings = await _settingsRepository.LoadAsync();
-        var profile = settings.GetActiveProfile();
-        profile.UpdateDnd(new DndSettings(mode));
-        await _settingsRepository.SaveAsync(settings);
+        await _settingsService.ToggleDndAsync(mode);
         CurrentDndMode = mode;
     }
 
     [RelayCommand]
     private async Task SaveSettingsAsync()
     {
-        var settings = await _settingsRepository.LoadAsync();
+        var settings = await _settingsService.LoadAsync();
         var profile = settings.GetActiveProfile();
         Display.ApplyToProfile(profile);
         Filter.ApplyToProfile(profile);
-        await _settingsRepository.SaveAsync(settings);
+        await _settingsService.SaveAsync(settings);
     }
 }

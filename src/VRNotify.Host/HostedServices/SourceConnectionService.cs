@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using VRNotify.Application.NotificationProcessing.Services;
-using VRNotify.Domain.Configuration;
 using VRNotify.Domain.NotificationProcessing;
 using VRNotify.Domain.SourceConnection;
 
@@ -10,28 +9,16 @@ namespace VRNotify.Host.HostedServices;
 public sealed class SourceConnectionService : BackgroundService
 {
     private readonly ISourceAdapter _adapter;
-    private readonly IFilterChain _filterChain;
-    private readonly PriorityResolver _priorityResolver;
-    private readonly INotificationHistory _history;
-    private readonly INotificationQueue _queue;
-    private readonly ISettingsRepository _settingsRepository;
+    private readonly INotificationPipelineService _pipeline;
     private readonly ILogger _logger;
 
     public SourceConnectionService(
         ISourceAdapter adapter,
-        IFilterChain filterChain,
-        PriorityResolver priorityResolver,
-        INotificationHistory history,
-        INotificationQueue queue,
-        ISettingsRepository settingsRepository,
+        INotificationPipelineService pipeline,
         ILogger logger)
     {
         _adapter = adapter;
-        _filterChain = filterChain;
-        _priorityResolver = priorityResolver;
-        _history = history;
-        _queue = queue;
-        _settingsRepository = settingsRepository;
+        _pipeline = pipeline;
         _logger = logger.ForContext<SourceConnectionService>();
     }
 
@@ -69,53 +56,7 @@ public sealed class SourceConnectionService : BackgroundService
     {
         try
         {
-            var settings = await _settingsRepository.LoadAsync();
-            var profile = settings.GetActiveProfile();
-
-            // Filter
-            var filterResult = _filterChain.Evaluate(evt, profile.FilterRules);
-            if (!filterResult.IsAllowed)
-            {
-                _logger.Debug("Notification filtered out: {AppName}", evt.Sender.Name);
-                return;
-            }
-
-            // Priority
-            var priority = filterResult.OverridePriority ?? _priorityResolver.Resolve(evt);
-
-            // DND check
-            if (profile.Dnd.Mode == DndMode.SuppressAll)
-                return;
-            if (profile.Dnd.Mode == DndMode.HighPriorityOnly && priority != Priority.High)
-                return;
-
-            // Duration
-            var duration = priority switch
-            {
-                Priority.High => profile.Display.GetHighPriorityDuration(),
-                Priority.Medium => profile.Display.GetMediumPriorityDuration(),
-                _ => profile.Display.GetLowPriorityDuration()
-            };
-
-            // Create card
-            var card = new NotificationCard(
-                Guid.NewGuid(),
-                evt.EventId,
-                evt.SourceType,
-                priority,
-                evt.Channel.Name,
-                evt.Content.TruncatedText,
-                evt.Sender.Name,
-                evt.Sender.AvatarUrl,
-                duration);
-
-            // Save history
-            await _history.SaveAsync(card);
-
-            // Enqueue for display
-            await _queue.EnqueueAsync(card);
-
-            _logger.Debug("Notification enqueued: {Title} from {App}", card.Title, card.SenderDisplay);
+            await _pipeline.ProcessAsync(evt);
         }
         catch (Exception ex)
         {

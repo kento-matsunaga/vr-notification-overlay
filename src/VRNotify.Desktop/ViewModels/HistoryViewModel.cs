@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using VRNotify.Domain.Configuration;
+using VRNotify.Application.Configuration.Services;
 using VRNotify.Domain.NotificationProcessing;
 
 namespace VRNotify.Desktop.ViewModels;
@@ -9,7 +9,7 @@ namespace VRNotify.Desktop.ViewModels;
 public sealed partial class HistoryViewModel : ObservableObject
 {
     private readonly INotificationHistory _history;
-    private readonly ISettingsRepository _settingsRepository;
+    private readonly ISettingsService _settingsService;
 
     public ObservableCollection<HistoryEntry> Entries { get; } = new();
 
@@ -19,16 +19,16 @@ public sealed partial class HistoryViewModel : ObservableObject
     [ObservableProperty]
     private int _maxEntries = 1000;
 
-    public HistoryViewModel(INotificationHistory history, ISettingsRepository settingsRepository)
+    public HistoryViewModel(INotificationHistory history, ISettingsService settingsService)
     {
         _history = history;
-        _settingsRepository = settingsRepository;
+        _settingsService = settingsService;
     }
 
     [RelayCommand]
     private async Task LoadHistoryAsync()
     {
-        var settings = await _settingsRepository.LoadAsync();
+        var settings = await _settingsService.LoadAsync();
         RetentionDays = settings.History.RetentionDays;
         MaxEntries = settings.History.MaxEntries;
 

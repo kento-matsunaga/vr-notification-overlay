@@ -3,7 +3,7 @@ using VRNotify.Domain.SourceConnection;
 
 namespace VRNotify.Application.NotificationProcessing.Services;
 
-public sealed class PriorityResolver
+public sealed class PriorityResolver : IPriorityResolver
 {
     public Priority Resolve(NotificationEvent notification)
     {
