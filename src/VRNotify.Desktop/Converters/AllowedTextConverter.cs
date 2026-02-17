@@ -6,7 +6,7 @@ namespace VRNotify.Desktop.Converters;
 public sealed class AllowedTextConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        => value is true ? "Allowed" : "Blocked";
+        => value is true ? "許可" : "ブロック";
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotSupportedException();

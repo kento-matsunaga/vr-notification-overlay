@@ -105,18 +105,18 @@ public partial class App : WpfApplication
     {
         var menu = new System.Windows.Controls.ContextMenu();
 
-        var settingsItem = new System.Windows.Controls.MenuItem { Header = "Settings..." };
+        var settingsItem = new System.Windows.Controls.MenuItem { Header = "設定..." };
         settingsItem.Click += (_, _) => OpenSettings();
         menu.Items.Add(settingsItem);
 
         menu.Items.Add(new System.Windows.Controls.Separator());
 
-        var dndMenu = new System.Windows.Controls.MenuItem { Header = "DND Mode" };
-        var dndOff = new System.Windows.Controls.MenuItem { Header = "Off" };
+        var dndMenu = new System.Windows.Controls.MenuItem { Header = "おやすみモード" };
+        var dndOff = new System.Windows.Controls.MenuItem { Header = "オフ" };
         dndOff.Click += (_, _) => SetDndMode(DndMode.Off);
-        var dndAll = new System.Windows.Controls.MenuItem { Header = "Suppress All" };
+        var dndAll = new System.Windows.Controls.MenuItem { Header = "すべて非表示" };
         dndAll.Click += (_, _) => SetDndMode(DndMode.SuppressAll);
-        var dndHigh = new System.Windows.Controls.MenuItem { Header = "High Priority Only" };
+        var dndHigh = new System.Windows.Controls.MenuItem { Header = "重要な通知のみ" };
         dndHigh.Click += (_, _) => SetDndMode(DndMode.HighPriorityOnly);
         dndMenu.Items.Add(dndOff);
         dndMenu.Items.Add(dndAll);
@@ -125,7 +125,7 @@ public partial class App : WpfApplication
 
         menu.Items.Add(new System.Windows.Controls.Separator());
 
-        var exitItem = new System.Windows.Controls.MenuItem { Header = "Exit" };
+        var exitItem = new System.Windows.Controls.MenuItem { Header = "終了" };
         exitItem.Click += (_, _) => Shutdown();
         menu.Items.Add(exitItem);
 
