@@ -35,13 +35,11 @@ public sealed partial class DisplayViewModel : ObservableObject
     public void ApplyToProfile(Profile profile)
     {
         var duration = TimeSpan.FromSeconds(DisplayDurationSeconds);
-        profile.UpdateDisplay(new DisplayConfig(
-            Position: Position,
-            SlotCount: SlotCount,
-            Opacity: (float)Opacity,
-            Scale: (float)Scale,
-            LowPriorityDuration: duration,
-            MediumPriorityDuration: duration + TimeSpan.FromSeconds(2),
-            HighPriorityDuration: duration + TimeSpan.FromSeconds(5)));
+        profile.UpdateDisplay(DisplayConfig.WithBaseDuration(
+            baseDuration: duration,
+            position: Position,
+            slotCount: SlotCount,
+            opacity: (float)Opacity,
+            scale: (float)Scale));
     }
 }

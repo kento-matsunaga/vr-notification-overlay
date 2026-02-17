@@ -1,4 +1,3 @@
-using System.Text.Json;
 using VRNotify.Domain.SourceConnection;
 
 namespace VRNotify.Domain.NotificationProcessing;

@@ -3,7 +3,7 @@ using VRNotify.Domain.VRDisplay;
 
 namespace VRNotify.Application.VRDisplay.Services;
 
-public sealed class DisplaySlotManager
+public sealed class DisplaySlotManager : IDisplaySlotManager
 {
     private readonly List<DisplaySlot> _slots = new();
 

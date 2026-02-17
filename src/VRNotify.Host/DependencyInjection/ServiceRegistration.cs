@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using VRNotify.Application.Configuration.Services;
 using VRNotify.Application.NotificationProcessing.Services;
 using VRNotify.Application.VRDisplay.Services;
 using VRNotify.Domain.Configuration;
@@ -34,8 +35,10 @@ public static class ServiceRegistration
         services.AddSingleton<ISourceAdapter, WindowsNotificationAdapter>();
 
         // Application - Services
-        services.AddSingleton<PriorityResolver>();
-        services.AddSingleton<DisplaySlotManager>();
+        services.AddSingleton<IPriorityResolver, PriorityResolver>();
+        services.AddSingleton<IDisplaySlotManager, DisplaySlotManager>();
+        services.AddSingleton<INotificationPipelineService, NotificationPipelineService>();
+        services.AddSingleton<ISettingsService, SettingsService>();
 
         // Overlay
         services.AddSingleton<IOverlayManager, OpenVrOverlayManager>();

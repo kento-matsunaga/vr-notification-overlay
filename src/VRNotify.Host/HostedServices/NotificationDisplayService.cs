@@ -1,7 +1,5 @@
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using VRNotify.Application.VRDisplay.Services;
-using VRNotify.Domain.Configuration;
 using VRNotify.Domain.NotificationProcessing;
 using VRNotify.Domain.VRDisplay;
 
@@ -11,21 +9,18 @@ public sealed class NotificationDisplayService : BackgroundService
 {
     private readonly INotificationQueue _queue;
     private readonly IOverlayManager _overlayManager;
-    private readonly DisplaySlotManager _slotManager;
-    private readonly ISettingsRepository _settingsRepository;
+    private readonly IDisplaySlotManager _slotManager;
     private readonly ILogger _logger;
 
     public NotificationDisplayService(
         INotificationQueue queue,
         IOverlayManager overlayManager,
-        DisplaySlotManager slotManager,
-        ISettingsRepository settingsRepository,
+        IDisplaySlotManager slotManager,
         ILogger logger)
     {
         _queue = queue;
         _overlayManager = overlayManager;
         _slotManager = slotManager;
-        _settingsRepository = settingsRepository;
         _logger = logger.ForContext<NotificationDisplayService>();
     }
 

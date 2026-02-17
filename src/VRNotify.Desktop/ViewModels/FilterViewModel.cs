@@ -8,17 +8,10 @@ namespace VRNotify.Desktop.ViewModels;
 
 public sealed partial class FilterViewModel : ObservableObject
 {
-    private readonly ISettingsRepository _settingsRepository;
-
     [ObservableProperty]
     private bool _isAllowlistMode;
 
     public ObservableCollection<AppFilterEntry> Apps { get; } = new();
-
-    public FilterViewModel(ISettingsRepository settingsRepository)
-    {
-        _settingsRepository = settingsRepository;
-    }
 
     public void LoadFromProfile(Profile profile)
     {
