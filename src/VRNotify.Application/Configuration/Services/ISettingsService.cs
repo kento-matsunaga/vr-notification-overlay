@@ -12,4 +12,5 @@ public interface ISettingsService
     Task<UserSettings> LoadAsync(CancellationToken ct = default);
     Task SaveAsync(UserSettings settings, CancellationToken ct = default);
     Task ToggleDndAsync(DndMode mode, CancellationToken ct = default);
+    Task RegisterAppAsync(string appName, CancellationToken ct = default);
 }

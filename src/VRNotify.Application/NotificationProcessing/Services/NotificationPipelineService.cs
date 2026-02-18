@@ -1,4 +1,5 @@
 using Serilog;
+using VRNotify.Application.Configuration.Services;
 using VRNotify.Domain.Configuration;
 using VRNotify.Domain.NotificationProcessing;
 
@@ -7,6 +8,7 @@ namespace VRNotify.Application.NotificationProcessing.Services;
 public sealed class NotificationPipelineService : INotificationPipelineService
 {
     private readonly ISettingsRepository _settingsRepository;
+    private readonly ISettingsService _settingsService;
     private readonly IFilterChain _filterChain;
     private readonly IPriorityResolver _priorityResolver;
     private readonly INotificationHistory _history;
@@ -15,6 +17,7 @@ public sealed class NotificationPipelineService : INotificationPipelineService
 
     public NotificationPipelineService(
         ISettingsRepository settingsRepository,
+        ISettingsService settingsService,
         IFilterChain filterChain,
         IPriorityResolver priorityResolver,
         INotificationHistory history,
@@ -22,6 +25,7 @@ public sealed class NotificationPipelineService : INotificationPipelineService
         ILogger logger)
     {
         _settingsRepository = settingsRepository;
+        _settingsService = settingsService;
         _filterChain = filterChain;
         _priorityResolver = priorityResolver;
         _history = history;
@@ -31,6 +35,9 @@ public sealed class NotificationPipelineService : INotificationPipelineService
 
     public async Task ProcessAsync(NotificationEvent notification, CancellationToken ct = default)
     {
+        // Auto-register app before filtering (blocked apps still need to appear in filter UI)
+        await _settingsService.RegisterAppAsync(notification.Sender.Name, ct);
+
         var settings = await _settingsRepository.LoadAsync(ct);
         var profile = settings.GetActiveProfile();
 

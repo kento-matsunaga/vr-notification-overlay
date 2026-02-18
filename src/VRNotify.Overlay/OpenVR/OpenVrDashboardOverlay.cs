@@ -32,6 +32,10 @@ public sealed class OpenVrDashboardOverlay : IDashboardOverlay
         _overlay = new OVRSharp.Overlay("vrnotify.dashboard", "VRNotify Settings", dashboardOverlay: true);
         _overlay.WidthInMeters = 1.5f;
 
+        // Tell OpenVR the overlay pixel size so mouse events return pixel coordinates
+        var mouseScale = new HmdVector2_t { v0 = SkiaSettingsPanelRenderer.PanelWidth, v1 = SkiaSettingsPanelRenderer.PanelHeight };
+        Valve.VR.OpenVR.Overlay.SetOverlayMouseScale(_overlay.Handle, ref mouseScale);
+
         // Set thumbnail
         SetThumbnail();
 
@@ -69,12 +73,12 @@ public sealed class OpenVrDashboardOverlay : IDashboardOverlay
         }
     }
 
-    private void HandleClick(float normalizedX, float normalizedY)
+    private void HandleClick(float x, float y)
     {
-        // OpenVR provides normalized UV coords (0-1), convert to pixel coords
-        // Note: OpenVR Y is inverted (0 = bottom, 1 = top)
-        float pixelX = normalizedX * SkiaSettingsPanelRenderer.PanelWidth;
-        float pixelY = (1f - normalizedY) * SkiaSettingsPanelRenderer.PanelHeight;
+        // With MouseScale set, OpenVR returns pixel coordinates directly
+        // Y axis is inverted (0 = bottom of overlay)
+        float pixelX = x;
+        float pixelY = SkiaSettingsPanelRenderer.PanelHeight - y;
 
         foreach (var (id, rect) in _hitAreas)
         {
