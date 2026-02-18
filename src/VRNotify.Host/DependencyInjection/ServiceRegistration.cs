@@ -42,11 +42,13 @@ public static class ServiceRegistration
 
         // Overlay
         services.AddSingleton<IOverlayManager, OpenVrOverlayManager>();
+        services.AddSingleton<IDashboardOverlay, OpenVrDashboardOverlay>();
 
         // HostedServices
         services.AddHostedService<OpenVrHostedService>();
         services.AddHostedService<SourceConnectionService>();
         services.AddHostedService<NotificationDisplayService>();
+        services.AddHostedService<DashboardOverlayHostedService>();
 
         return services;
     }

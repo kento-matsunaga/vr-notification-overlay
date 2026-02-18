@@ -1,3 +1,4 @@
+using Serilog;
 using VRNotify.Domain.NotificationProcessing;
 using VRNotify.Domain.SourceConnection;
 using VRNotify.Domain.VRDisplay;
@@ -31,7 +32,7 @@ catch (InvalidOperationException)
 
 // [2/6] Initialize OpenVR overlay
 Console.WriteLine("[2/6] Initializing OpenVR overlay...");
-await using var overlayManager = new OpenVrOverlayManager();
+await using var overlayManager = new OpenVrOverlayManager(Log.Logger);
 try
 {
     await overlayManager.InitializeAsync();

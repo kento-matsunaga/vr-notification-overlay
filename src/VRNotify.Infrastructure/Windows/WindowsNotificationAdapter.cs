@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using VRNotify.Domain.NotificationProcessing;
 using VRNotify.Domain.SourceConnection;
 using Windows.UI.Notifications;
@@ -8,7 +9,7 @@ namespace VRNotify.Infrastructure.Windows;
 public sealed class WindowsNotificationAdapter : ISourceAdapter
 {
     private UserNotificationListener? _listener;
-    private readonly HashSet<uint> _processedIds = new();
+    private readonly ConcurrentDictionary<uint, byte> _processedIds = new();
 
     public SourceType SourceType => SourceType.WindowsNotification;
     public ConnectionState State { get; private set; } = ConnectionState.Disconnected;
@@ -65,7 +66,7 @@ public sealed class WindowsNotificationAdapter : ISourceAdapter
         if (args.ChangeKind != UserNotificationChangedKind.Added)
             return;
 
-        if (!_processedIds.Add(args.UserNotificationId))
+        if (!_processedIds.TryAdd(args.UserNotificationId, 0))
             return;
 
         try

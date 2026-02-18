@@ -28,7 +28,11 @@ public partial class App : WpfApplication
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "VRNotify", "logs", "vrnotify-.log");
         Log.Logger = new LoggerConfiguration()
+#if DEBUG
             .MinimumLevel.Debug()
+#else
+            .MinimumLevel.Information()
+#endif
             .WriteTo.File(logPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
             .CreateLogger();
 
@@ -37,14 +41,13 @@ public partial class App : WpfApplication
         // Check Package Identity (required for Windows notification listener)
         if (!HasPackageIdentity())
         {
-            Log.Error("Package Identity not detected. Notification listener will not work.");
+            Log.Warning("No Package Identity detected");
             MessageBox.Show(
-                "VRNotify を正しく動作させるには、スタートメニューから起動してください。\n\n" +
-                "exe ファイルを直接ダブルクリックすると、Windows 通知の取得に必要な\n" +
-                "権限が付与されません。\n\n" +
-                "【対処方法】\n" +
-                "スタートメニュー → VRNotify をクリックして起動",
-                "VRNotify - 起動方法エラー",
+                "VRNotify はスタートメニューから起動するか、\n" +
+                "SteamVR の自動起動をご利用ください。\n\n" +
+                "EXE を直接起動すると Windows 通知の受信に\n" +
+                "必要な権限が付与されません。",
+                "VRNotify - 起動エラー",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
             Shutdown();

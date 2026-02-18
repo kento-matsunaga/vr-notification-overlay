@@ -6,6 +6,7 @@ namespace VRNotify.Application.VRDisplay.Services;
 public sealed class DisplaySlotManager : IDisplaySlotManager
 {
     private readonly List<DisplaySlot> _slots = new();
+    private readonly object _lock = new();
 
     public DisplaySlotManager(int slotCount = 3)
     {
@@ -15,7 +16,10 @@ public sealed class DisplaySlotManager : IDisplaySlotManager
 
     public DisplaySlot? FindAvailableSlot()
     {
-        return _slots.FirstOrDefault(s => !s.IsOccupied);
+        lock (_lock)
+        {
+            return _slots.FirstOrDefault(s => !s.IsOccupied);
+        }
     }
 
     public DisplaySlot? PreemptLowestPriority(Priority incomingPriority)

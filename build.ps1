@@ -42,6 +42,16 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "  Published to: $publishDir" -ForegroundColor Green
 
+# Step 2.5: Publish Launcher
+Write-Host "[2.5/5] Publishing VRNotify.Launcher..." -ForegroundColor Yellow
+$launcherProj = Join-Path $rootDir 'src\VRNotify.Launcher\VRNotify.Launcher.csproj'
+dotnet publish $launcherProj -c $Configuration -o $publishDir
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Launcher publish failed"
+    exit 1
+}
+Write-Host "  Launcher published" -ForegroundColor Green
+
 # Step 3: Copy packaging assets and clean up
 Write-Host "[3/5] Preparing release files..." -ForegroundColor Yellow
 Copy-Item (Join-Path $rootDir 'packaging\AppxManifest.xml') -Destination $publishDir -Force

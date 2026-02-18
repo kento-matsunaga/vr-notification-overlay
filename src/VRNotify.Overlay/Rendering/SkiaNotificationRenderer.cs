@@ -94,6 +94,11 @@ public sealed class SkiaNotificationRenderer : IOverlayRenderer
     }
 
     private static readonly string FontFamily = ResolveFont();
+    private static readonly SKTypeface CachedTypeface =
+        SKTypeface.FromFamilyName(FontFamily) ?? SKTypeface.Default;
+    private static readonly SKTypeface CachedBoldTypeface =
+        SKTypeface.FromFamilyName(FontFamily, SKFontStyleWeight.Bold,
+            SKFontStyleWidth.Normal, SKFontStyleSlant.Upright) ?? SKTypeface.Default;
 
     private static string ResolveFont()
     {
@@ -106,16 +111,13 @@ public sealed class SkiaNotificationRenderer : IOverlayRenderer
 
     private static void DrawText(SKCanvas canvas, NotificationCard card)
     {
-        var typeface = SKTypeface.FromFamilyName(FontFamily) ?? SKTypeface.Default;
-
         // Sender name
         using var senderPaint = new SKPaint
         {
             Color = SenderTextColor,
             TextSize = 16f,
             IsAntialias = true,
-            Typeface = SKTypeface.FromFamilyName(FontFamily, SKFontStyleWeight.Bold,
-                SKFontStyleWidth.Normal, SKFontStyleSlant.Upright) ?? typeface
+            Typeface = CachedBoldTypeface
         };
         var senderX = BorderWidth + PaddingLeft;
         var senderY = PaddingTop + senderPaint.TextSize;
@@ -127,7 +129,7 @@ public sealed class SkiaNotificationRenderer : IOverlayRenderer
             Color = new SKColor(0x88, 0x88, 0x88),
             TextSize = 12f,
             IsAntialias = true,
-            Typeface = typeface
+            Typeface = CachedTypeface
         };
         var titleX = senderX + senderPaint.MeasureText(card.SenderDisplay) + 8f;
         canvas.DrawText(card.Title, titleX, senderY, titlePaint);
@@ -138,7 +140,7 @@ public sealed class SkiaNotificationRenderer : IOverlayRenderer
             Color = BodyTextColor,
             TextSize = 14f,
             IsAntialias = true,
-            Typeface = typeface
+            Typeface = CachedTypeface
         };
         var bodyY = senderY + 24f;
 
@@ -152,7 +154,5 @@ public sealed class SkiaNotificationRenderer : IOverlayRenderer
             bodyText += "...";
         }
         canvas.DrawText(bodyText, senderX, bodyY, bodyPaint);
-
-        typeface.Dispose();
     }
 }

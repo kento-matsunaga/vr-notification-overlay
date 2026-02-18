@@ -4,6 +4,8 @@ namespace VRNotify.Domain.VRDisplay;
 
 public sealed class DisplaySlot
 {
+    private readonly object _lock = new();
+
     public int SlotIndex { get; }
     public NotificationCard? CurrentCard { get; private set; }
     public bool IsOccupied => CurrentCard is not null;
@@ -15,13 +17,19 @@ public sealed class DisplaySlot
 
     public void Assign(NotificationCard card)
     {
-        CurrentCard = card;
+        lock (_lock)
+        {
+            CurrentCard = card;
+        }
     }
 
     public NotificationCard? Release()
     {
-        var card = CurrentCard;
-        CurrentCard = null;
-        return card;
+        lock (_lock)
+        {
+            var card = CurrentCard;
+            CurrentCard = null;
+            return card;
+        }
     }
 }

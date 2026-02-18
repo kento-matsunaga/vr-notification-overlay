@@ -1,3 +1,4 @@
+using Serilog;
 using VRNotify.Domain.NotificationProcessing;
 using VRNotify.Domain.SourceConnection;
 using VRNotify.Domain.VRDisplay;
@@ -20,7 +21,7 @@ var card = new NotificationCard(
 Console.WriteLine("  Card created: Discord / High / TestUser / #general");
 
 Console.WriteLine("[2/4] Initializing OpenVR overlay...");
-await using var manager = new OpenVrOverlayManager();
+await using var manager = new OpenVrOverlayManager(Log.Logger);
 try
 {
     await manager.InitializeAsync();

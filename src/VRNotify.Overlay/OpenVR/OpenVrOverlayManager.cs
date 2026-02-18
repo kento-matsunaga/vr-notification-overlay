@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using OVRSharp;
+using Serilog;
 using SkiaSharp;
 using Valve.VR;
 using VRNotify.Domain.NotificationProcessing;
@@ -17,13 +18,28 @@ public sealed class OpenVrOverlayManager : IOverlayManager
     private OVRSharp.Application? _application;
     private OVRSharp.Overlay? _overlay;
     private readonly SkiaNotificationRenderer _renderer = new();
+    private readonly ILogger _logger;
     private string? _texturePath;
 
     public bool IsAvailable { get; private set; }
 
+    public OpenVrOverlayManager(ILogger logger)
+    {
+        _logger = logger.ForContext<OpenVrOverlayManager>();
+    }
+
     public Task InitializeAsync(CancellationToken ct = default)
     {
         _application = new OVRSharp.Application(OVRSharp.Application.ApplicationType.Overlay);
+
+        // Register VR application manifest for auto-launch
+        var manifestPath = Path.Combine(AppContext.BaseDirectory, "manifest.vrmanifest");
+        if (File.Exists(manifestPath))
+        {
+            var error = Valve.VR.OpenVR.Applications.AddApplicationManifest(manifestPath, false);
+            if (error != EVRApplicationError.None)
+                _logger.Warning("Failed to register VR manifest: {Error}", error);
+        }
 
         _overlay = new OVRSharp.Overlay("vrnotify.main", "VRNotify");
         _overlay.WidthInMeters = OverlayWidthMeters;
@@ -76,7 +92,7 @@ public sealed class OpenVrOverlayManager : IOverlayManager
             bitmap.InstallPixels(info, handle.AddrOfPinnedObject(), info.RowBytes);
             using var image = SKImage.FromBitmap(bitmap);
             using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-            using var stream = File.OpenWrite(path);
+            using var stream = File.Create(path);
             data.SaveTo(stream);
         }
         finally
